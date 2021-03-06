@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+    {%block content%}
+        <h4>修改笔记</h4>
+        <form method="post">
+            {{form.csrf_token}}
+            {{form.body}}
+            {{form.submit}}
+        </form>
+    {%endblock%}
