@@ -7,15 +7,15 @@
 # @Desc: 大致描述下此文件的内容吧。。。
 # 声明:本作者所有源代码只可以用作技术学习,不可用做其他非法用途。
 from flask import Flask,request
-from bhjk.bhjk import bhjk_bp
-from mt.meituan import meituan_bp
+from bp_bhjk.bhjk import bhjk_bp
+from bp_mt.meituan import meituan_bp
 import logging
 from utiles.authtoken import *
 #注册一个app
 app = Flask(__name__)
 ##app上注册蓝图
-app.register_blueprint(bhjk_bp,url_prefix="/bhjk")#薄荷健康
-app.register_blueprint(meituan_bp,url_prefix="/mt")#美团_token
+app.register_blueprint(bhjk_bp,url_prefix="/bp_bhjk")#薄荷健康
+app.register_blueprint(meituan_bp,url_prefix="/user")#美团_token
 # 在创建 app 之前将 log 级别重置为debug，让其线上 info 日志级别
 logging.basicConfig(level=logging.INFO)
 #返回字典
@@ -35,23 +35,27 @@ def check_token():
         if token is None or "":
             resDict["desc"] = "检查Token传入值!!!"
             #日志
-            app.logger.info("[info][time: %s][reqip: %s][描述: %s]" % (
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+            app.logger.info("[reqip: %s][描述: %s]" % (
                          request.remote_addr,
                          "检查Token传入值!!!"
                          ))
             return resDict
 
-        cerres = certify_token(key,token)
-        if cerres is False:
+        certify_res = certify_token(key,token)
+        if certify_res[0] is False:
             resDict["desc"] = "TOKEN过期联系管理员!!!"
             # 日志
-            app.logger.info("[info][time: %s][reqip: %s][描述: %s]" % (
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+            app.logger.info("[reqip: %s][描述: %s]" % (
                          request.remote_addr,
-                         "TOKEN过期联系管理员!!!"
+                         "TOKEN过期,过期时间->"%certify_res[1]
                          ))
             return resDict
+        if certify_res[0] is True:
+            # 日志
+            app.logger.info("[reqip: %s][描述: %s]" % (
+                request.remote_addr,
+                "TOKEN验证通过!,过期时间->"%certify_res[1]
+            ))
 @app.route("/gettoken/",methods=["GET"])
 def getToken():
     """
@@ -66,16 +70,14 @@ def getToken():
         expire_times = 60*60*24*days
         token = generate_token(key,expire_times)
         # 日志
-        app.logger.info("[info][time: %s][reqip: %s][描述: %s]"%(
-            time.strftime("%Y-%m-%d %H:%M:%S",time.localtime()),
+        app.logger.info("[reqip: %s][描述: %s]"%(
             request.remote_addr,
             "生成token,有效期{}天".format(str(days))
             ))
         return token
     resDict["desc"] = "token注册失败,检查管理员密码"
     # 日志
-    app.logger.info("[info][time: %s][reqip: %s][描述: %s]" % (
-        time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+    app.logger.info("[reqip: %s][描述: %s]" % (
                  request.remote_addr,
                  "token注册失败,检查管理员密码"
                  ))

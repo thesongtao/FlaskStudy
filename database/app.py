@@ -71,7 +71,7 @@ class Author(db.Model):
     articles = db.relationship("Article")
 
 class Article(db.Model):
-    author_id = db.Column(db.Integer,db.ForeignKey('author.id'))
+    author_id = db.Column(db.Integer,db.ForeignKey('bp_author.id'))
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String(50),index=True,nullable=False)
     body = db.Column(db.Text)

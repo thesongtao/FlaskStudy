@@ -46,6 +46,7 @@ def certify_token(key, token):
         return False
     ts_str = token_list[0]
     # print("key解密后的时间戳:",ts_str)
+    expireTime = time.strftime("%Y-%m-%d %H:%M:%S")
     if float(ts_str) < time.time():
         return False
     known_sha1_tsstr = token_list[1]
@@ -55,7 +56,7 @@ def certify_token(key, token):
         # token certification failed
         return False
     # token certification success
-    return True
+    return True,expireTime
 if __name__ == '__main__':
 
     #一个小时的key
