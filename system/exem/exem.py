@@ -209,8 +209,15 @@ def file_upload():
     #获取文件
     file = request.files["file"]
     stempic = request.form.get("stempic", "")
-    if stempic == 1: #上传题干图片
-        file_path = "/root/file/stem/{}.png".format(filename)
+    answerpic = request.form.get("answerpic","")
+    if str(stempic) == "1": #上传题干图片
+        file_path = "/root/file/stem/{}".format(filename)
+    elif str(answerpic) == "1":
+        qno = filename.split(".")[0] # qno_timestamp.png
+        file_path = "/root/file/pic/{}/".format(qno)
+        if not os.path.exists(file_path):
+            os.mkdir(file_path)
+        file_path += filename
     else:
         file_path = "/root/file/" + filename
     #保存文件
@@ -229,10 +236,11 @@ def file_download():
     filename = data.get("filename","")
     answerpic = data.get("answerpic","")
     stempic = data.get("stempic","")
-    if answerpic == "1":#下载答案
-        file_path = "/root/file/pic/{}/{}.png".format(filename)
-    elif stempic ==1:
-        file_path = "/root/file/stem/{}.png".format(filename)
+    if str(answerpic) == "1":#下载答案
+        qno = filename.split(".")[0]
+        file_path = "/root/file/pic/{}/{}".format(qno,filename)
+    elif str(stempic) =="1":
+        file_path = "/root/file/stem/{}".format(filename)
     else:
         file_path="/root/file/"+filename
     if os.path.isfile(file_path):
@@ -248,11 +256,11 @@ def select_no_upload():
     :return:
     """
     sql = """
-        select exam.exam_id,examdetail.exam_detail_id,exam.name,exam.start_time,subject.name,examdetail.question_file_path,examdetail.question_file_path
+        select exam.exam_id,examdetail.exam_detail_id,exam.name,exam.start_time,subject.name,examdetail.question_file_path,examdetail.question_file_path,examdetail.is_upload_library
  			 
  	    from t_exam exam,t_exam_detail examdetail,t_subject subject
  		
-				where examdetail.exam_id = exam.exam_id and examdetail.subject_id= subject.id and examdetail.is_upload_library=0 order by exam.start_time desc
+				where examdetail.exam_id = exam.exam_id and examdetail.subject_id= subject.id and examdetail.is_upload_library!=2 order by exam.start_time desc
     """
     res = mysql.select(sql)
     dataList = []
@@ -265,6 +273,7 @@ def select_no_upload():
             "subject_name": "",
             "question_file_path":"",
             "answer_file_path":""
+            # "is_upload_library":"",
         }
         exam_id = tp[0]
         exam_detail_id = tp[1]
@@ -273,6 +282,7 @@ def select_no_upload():
         subject_name = tp[4]
         question_file_path = tp[5]
         answer_file_path = tp[6]
+        # is_upload_library = tp[7]
         data["exam_id"] = exam_id
         data["exam_detail_id"] = exam_detail_id
         data["exam_name"] = exam_name
@@ -280,5 +290,6 @@ def select_no_upload():
         data["subject_name"] = subject_name
         data["question_file_path"] = question_file_path
         data["answer_file_path"] = answer_file_path
+        # data["is_upload_library"] = is_upload_library
         dataList.append(data)
     return json.dumps(dataList)

@@ -34,7 +34,7 @@ app.register_blueprint(knowledge_bp,url_prefix="/knowledge")
 logging.basicConfig(level=logging.INFO)
 #题库管理
 app.register_blueprint(question_bp,url_prefix="/question")
-
+app.config['MAX_CONTENT_PATH'] = 1024*1024
 #返回字典
 if __name__ == '__main__':
     gunicorn_logger = logging.getLogger('gunicorn.error')

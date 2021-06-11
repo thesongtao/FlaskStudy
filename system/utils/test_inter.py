@@ -3,7 +3,7 @@
 # @Time    : 2021-05-24 23:21
 # @Author  : 玛卡玛卡
 # @Site    : 
-# @File    : test.py
+# @File    : test_inter.py
 # @Desc: 接口测试
 import requests
 headers = {'Content-Type': 'application/json;charset=UTF-8'}
@@ -151,32 +151,36 @@ headers = {'Content-Type': 'application/json;charset=UTF-8'}
 # res = requests.get(url=url)
 # print("查询某次考试所有科目:",res.text)
 #添加班级考试成绩单
-url ="http://127.0.0.1:5002/exam/create/gradereport?exam_id=4&exam_detail_id=4&class_id=5&grade_file_path=4_5_2020_3_grade.xml"
-res = requests.get(url=url)
-print("添加班级考试成绩单:",res.text)
+# url ="http://127.0.0.1:5002/exam/create/gradereport?exam_id=4&exam_detail_id=4&class_id=5&grade_file_path=4_5_2020_3_grade.xml"
+# res = requests.get(url=url)
+# print("添加班级考试成绩单:",res.text)
 #查询某次考试某个科目下的所有班级成绩报告
 # url ="http://127.0.0.1:5002/exam/select/gradereport?exam_detail_id=33"
 # res = requests.get(url=url)
 # print("查询某个科目下所有班级成绩单:",res.text)
 
+# 文件上传 (表单提交)Post
+# url ="http://8.140.105.168:5002/exam/file/upload?"
+# data = {
+#     "filename":"wl_1234567891234__123456789123.png",
+#     "stempic":1,
+# }
+# files = {"file":""}
+# with open("C:\\Users\\18629\\Desktop\\test.png",mode='rb') as f:
+#     file = f.read()
+#     files["file"] = file
+# res = requests.post(url,data=data,files=files)
+# print(res.text)
 #文件下载
 # url ="http://8.140.105.168:5002/exam/file/download?"
 # data = {
-#     "filename":"1.xlsx"
+#     "filename":"wl_1234567891234__123456789123.png",
+#     "stempic":1
 # }
 # res = requests.post(url,json=data)
-# with open("./test.xlsx",mode='wb') as f:
+# with open("wl_1234567891234__123456789123.png",mode='wb') as f:
 #     f.write(res.content)
-#文件上传 (表单提交)Post
-# url ="http://8.140.105.168:5002/exam/file/upload?"
-# data = {
-#     "filename":"30.xlsx",
-# }
-# files = {"file":""}
-# with open("C:\\Users\\18629\\Desktop\\30.xlsx",mode='rb') as f:
-#     file = f.read()
-#     files["file"] = file
-# requests.post(url,data=data,files=files)
+
 #查询还没有上传到公共试题的考试记录
 # url ="http://127.0.0.1:5002/exam/select/noupload"
 # res = requests.get(url)
@@ -195,7 +199,7 @@ print("添加班级考试成绩单:",res.text)
 # res = requests.post(url=url,json=data,headers=headers)
 # print(res.text)
 #删除题库试题
-# url ="http://127.0.0.1:5002/question/delete/?libtype=1&id=16700"
+# url ="http://8.140.105.168:5002/question/delete/?libtype=2&id=16706"
 # res = requests.get(url)
 # print(res.text)
 #添加试题到题库
@@ -206,7 +210,7 @@ print("添加班级考试成绩单:",res.text)
 #     "difficulty":"0.85",
 #     "nums":"0", #创建传0就行
 #     "qno":"", #wl_时间戳 名命题号
-#     "stem":"", #保存html样式
+#     "stem":"厉害", #保存html样式
 #     "source":"", #梨树一中
 #     "points":"", #牛顿第一定律 第三定律    #此项需要从知识图谱中进行添加
 #     "answer":"",#保存文本的html样式 ,新上传的题没有图片答案。
@@ -222,21 +226,28 @@ print("添加班级考试成绩单:",res.text)
 #     "libtype":"1",
 #     "qtype":"测试题",
 #     "difficulty":"0.85",
-#     "nums":"0", #创建传0就行
-#     "qno":"", #wl_时间戳 名命题号
-#     "stem":"", #保存html样式
+#     "nums":"1", #创建传0就行
+#     "qno":"1623216962626", #wl_时间戳 名命题号
+#     "stem":"&amp;lt;p&amp;gt;真实牛逼了士大夫&amp;nbsp;我去了。想想都刺激&amp;lt;/p&amp;gt;", #保存html样式
 #     "source":"", #梨树一中
 #     "points":"", #牛顿第一定律 第三定律    #此项需要从知识图谱中进行添加
 #     "answer":"",#保存文本的html样式 ,新上传的题没有图片答案。
 #     "exam_detail_id":0, #是否为考试题(如果为考试题,选择哪场考试的哪个科目把id传过来,非考试为空。)
-#     "id":"4"
+#     "id":"16708"
 # }
+# res = requests.post(url=url,json=data,headers=headers)
+# print("试题更新:",res.text)
 #试题匹配
-# url ="http://8.140.105.168:5002/question/matching/"
+# url ="http://127.0.0.1:5002/question/matching/"
 # data = {
 #     "libtype":1,
 #     "subject_id":"4",
-#     "text":"将平行板电容器、滑动变阻器、电源按如图所示连接。若平行板电容器内存在垂直纸面向里的匀强磁场，—电子束沿垂直于电场线与磁感线方向，从左侧入射后偏向A极板，为了使电子束沿入射方向做直线运动"
+#     "text":"梨树一中"
 # }
 # res = requests.post(url=url,json=data)
 # print(res.text)
+
+#查询试题 题型列表
+url = "http://127.0.0.1:5002/question/qtype/"
+res = requests.get(url)
+print(res.text)

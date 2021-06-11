@@ -24,13 +24,13 @@ def select_question():
     data = request.get_data()
     data = json.loads(data)
     libtype = data.get("libtype","")#选择题库 1:公共题库  2:推荐题库
-    if libtype == "":
+    if str(libtype) == "":
         return {"desc":"请选择查询的题库!"}
     keywords = data.get("keyword","")#搜索内容为知识点搜索,多个知识点以||分割
     subject_id = data.get("subject_id","")
     if keywords == "":
         return {"desc":"选择知识点进行搜索!"}
-    if libtype==1:
+    if str(libtype)=="1":
         table = "t_question_open"
     else:
         table = "t_question_tuijian"
@@ -39,9 +39,9 @@ def select_question():
         sql = 'select * from {} where points like"%{}%" and subject_id={} '.format(table,keyword,subject_id)
         finalsql += sql +"\n union"
     finalsql = finalsql.split("union")[0]
-    print(finalsql)
+    # print(finalsql)
     res = mysql.select(finalsql)
-    print(res)
+    # print(res)
     dataList = []
     for tp in res:
         data = {
@@ -95,14 +95,14 @@ def delete_question():
     :return:
     """
     libtype = request.args.get("libtype")#选择题库 1:公共题库  2:推荐题库
-    if libtype==1:
+    if str(libtype)=="1":
         table = "t_question_open"
     else:
         table = "t_question_tuijian"
     id = request.args.get("id")#试题id
     sql = "delete from %s where id=%s"%(table,id)
     res = mysql.insert(sql)
-    print(res)
+    # print(res)
     return res
 
 @question_bp.route("/add/",methods = ["POST"])
@@ -116,7 +116,7 @@ def add_question():
     jstr = json.loads(data)
     libtype = jstr.get("libtype")  # 选择题库 1:公共题库  2:推荐题库
     subject_id = jstr.get("subject_id")
-    if libtype == 1:
+    if str(libtype) == "1":
         table = "t_question_open"
     else:
         table = "t_question_tuijian"
@@ -136,8 +136,9 @@ def add_question():
                 values("{}","{}","{}","{}","{}","{}","{}","{}","{}","{}","{}")
             
           """.format(table,qtype,difficulty,nums,update_time,qno,stem,source,points,answer,exam_detail_id,subject_id)
-    print(sql)
+    # print(sql)
     res = mysql.insert(sql)
+    # print(res)
     return res
 
 
@@ -151,7 +152,7 @@ def update_question():
     data = request.get_data()
     jstr = json.loads(data)
     libtype = jstr.get("libtype")  # 选择题库 1:公共题库  2:推荐题库
-    if libtype == 1:
+    if str(libtype) == "1":
         table = "t_question_open"
     else:
         table = "t_question_tuijian"
@@ -169,10 +170,12 @@ def update_question():
     exam_detail_id = jstr.get("exam_detail_id", "")
     sql = """
             update {} set qtype="{}",difficulty="{}",nums="{}",update_time="{}",qno="{}",
-                          stem="{}",source="{}",points="{}",answer="{}",exam_detail_id="{}") 
+                          stem="{}",source="{}",points="{}",answer="{}",exam_detail_id="{}" 
                 where id = "{}"
           """.format(table,qtype, difficulty, nums, update_time, qno, stem, source, points, answer, exam_detail_id,id)
+    # print(sql)
     res = mysql.insert(sql)
+    # print(res)
     return res
 @question_bp.route("/matching/", methods=["POST"])
 def matching_questions():
@@ -183,12 +186,15 @@ def matching_questions():
     data = request.get_data()
     jstr = json.loads(data)
     libtype = jstr.get("libtype","")  # 选择题库 1:公共题库  2:推荐题库
-    if libtype == 1:
+    if str(libtype) == "1":
         table = "t_question_open"
     else:
         table = "t_question_tuijian"
     subject_id = jstr.get("subject_id")
-    text = jstr.get("text")#题干文本,不包含html标签
+    text = jstr.get("text","")#题干文本,不包含html标签
+    text = str(text)
+    if text == "":
+        return "[]"
     # keywords = jieba.analyse.extract_tags(text, topK=8, withWeight=False, allowPOS=(), withFlag=False)
     keywords = text.split("，")
     sql = 'select * from {} where subject_id={} and stem like "%{}" '
@@ -197,7 +203,7 @@ def matching_questions():
         s+= keyword
         s+="%"
     sql = sql.format(table,subject_id,s)
-    print(sql)
+    # print(sql)
     res = mysql.select(sql)
     dataList = []
     for tp in res:
@@ -245,3 +251,17 @@ def matching_questions():
         dataList.append(data)
     return json.dumps(dataList)
 
+@question_bp.route("/qtype/", methods=["GET"])
+def select_qtype():
+    """
+    查询题型列表
+    :return:
+    """
+    sql = "select typename from t_question_type"
+    datas = mysql.select(sql)
+    typenamelist = []
+    for tp in datas:
+        typenamelist.append(tp[0])
+    return {
+        "qtype_name_list":typenamelist
+    }
