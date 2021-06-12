@@ -14,6 +14,7 @@ from subject.subject import subject_bp
 from exem.exem import exem_bp
 from knowledge.knowledge import knowledge_bp
 from question.question import question_bp
+from intelligence.intelligence import intelligence_bp
 import logging
 #注册一个app
 app = Flask(__name__)
@@ -30,6 +31,8 @@ app.register_blueprint(subject_bp,url_prefix="/subject")
 app.register_blueprint(exem_bp,url_prefix="/exam")
 #知识点图谱管理蓝图
 app.register_blueprint(knowledge_bp,url_prefix="/knowledge")
+#注册智能推荐管理蓝图
+app.register_blueprint(intelligence_bp,url_prefix="/intelligence")
 # 在创建 app 之前将 log 级别重置为debug，让其线上 info 日志级别
 logging.basicConfig(level=logging.INFO)
 #题库管理
